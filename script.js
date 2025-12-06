@@ -20,6 +20,7 @@ class CricketScorer {
         this.battingTeam = 'A';
         this.currentOver = [];
         this.history = [];
+        this.extraPending = null; // Track if Wide or No Ball was clicked
         
         this.init();
     }
@@ -80,30 +81,56 @@ class CricketScorer {
         // Save state for undo
         this.saveState();
         
-        team.runs += runs;
-        team.balls++;
+        if (this.extraPending) {
+            // Wide or No Ball with runs
+            team.runs += runs + 1; // Extra run + batsman runs
+            // Don't increment balls for extras
+            
+            // Add to current over display
+            const extraLabel = this.extraPending === 'wide' ? 'WD' : 'NB';
+            this.currentOver.push({ type: 'extra', value: `${extraLabel}+${runs}` });
+            
+            this.extraPending = null; // Reset extra
+            this.clearExtraHighlight();
+        } else {
+            // Normal runs
+            team.runs += runs;
+            team.balls++;
+            
+            // Add to current over display
+            this.currentOver.push({ type: 'runs', value: runs });
+            
+            this.checkOverComplete();
+        }
         
-        // Add to current over display
-        this.currentOver.push({ type: 'runs', value: runs });
-        
-        this.checkOverComplete();
         this.updateDisplay();
     }
     
     addExtra(extraType) {
-        const team = this.getCurrentTeam();
-        
-        // Save state for undo
-        this.saveState();
-        
-        // Wide and No Ball add 1 run but don't count as a ball
-        team.runs += 1;
-        
-        // Add to current over display
-        this.currentOver.push({ type: 'extra', value: extraType === 'wide' ? 'WD' : 'NB' });
-        
-        // Don't increment balls for extras
-        this.updateDisplay();
+        // Set extra pending and highlight the buttons
+        this.extraPending = extraType;
+        this.highlightExtraMode();
+    }
+    
+    highlightExtraMode() {
+        // Visual feedback that extra is pending
+        document.querySelectorAll('.btn-extra').forEach(btn => {
+            btn.style.opacity = '0.5';
+        });
+        document.querySelectorAll('.btn-run').forEach(btn => {
+            btn.style.border = '3px solid #FF9800';
+        });
+        document.getElementById('instructionBanner').style.display = 'block';
+    }
+    
+    clearExtraHighlight() {
+        document.querySelectorAll('.btn-extra').forEach(btn => {
+            btn.style.opacity = '1';
+        });
+        document.querySelectorAll('.btn-run').forEach(btn => {
+            btn.style.border = 'none';
+        });
+        document.getElementById('instructionBanner').style.display = 'none';
     }
     
     addWicket() {
@@ -116,6 +143,12 @@ class CricketScorer {
         
         // Save state for undo
         this.saveState();
+        
+        // Clear any pending extra
+        if (this.extraPending) {
+            this.extraPending = null;
+            this.clearExtraHighlight();
+        }
         
         team.wickets++;
         team.balls++;
@@ -145,6 +178,8 @@ class CricketScorer {
         if (confirm('Switch batting team?')) {
             this.battingTeam = this.battingTeam === 'A' ? 'B' : 'A';
             this.currentOver = [];
+            this.extraPending = null;
+            this.clearExtraHighlight();
             this.updateDisplay();
         }
     }
@@ -174,6 +209,8 @@ class CricketScorer {
         this.teamB = { ...lastState.teamB };
         this.battingTeam = lastState.battingTeam;
         this.currentOver = [...lastState.currentOver];
+        this.extraPending = null;
+        this.clearExtraHighlight();
         
         this.updateDisplay();
     }
@@ -192,6 +229,8 @@ class CricketScorer {
         this.battingTeam = 'A';
         this.currentOver = [];
         this.history = [];
+        this.extraPending = null;
+        this.clearExtraHighlight();
         
         this.updateDisplay();
     }
