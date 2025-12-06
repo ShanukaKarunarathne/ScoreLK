@@ -1,0 +1,272 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 10px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+.match-info {
+    margin-bottom: 20px;
+}
+
+.team-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.team {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 15px;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+}
+
+.team h2 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.score-display {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.score-display .runs {
+    color: #fff;
+}
+
+.score-display .wickets {
+    font-size: 0.6em;
+    opacity: 0.9;
+}
+
+.overs {
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+.batting-team {
+    text-align: center;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+.batting-team h3 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.btn-switch {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-switch:hover {
+    background: #45a049;
+}
+
+.controls {
+    margin: 20px 0;
+}
+
+.runs-buttons, .extras-buttons {
+    margin-bottom: 20px;
+}
+
+.controls h4 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.btn-run, .btn-extra, .btn-wicket {
+    padding: 15px;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.btn-run {
+    background: #2196F3;
+    color: white;
+}
+
+.btn-run:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-extra {
+    background: #FF9800;
+    color: white;
+}
+
+.btn-extra:active {
+    transform: scale(0.95);
+}
+
+.btn-wicket {
+    background: #f44336;
+    color: white;
+    grid-column: span 3;
+}
+
+.btn-wicket:active {
+    transform: scale(0.95);
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-undo, .btn-reset {
+    padding: 12px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-undo {
+    background: #9E9E9E;
+    color: white;
+}
+
+.btn-reset {
+    background: #f44336;
+    color: white;
+}
+
+.current-over {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+}
+
+.current-over h4 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.balls-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 40px;
+}
+
+.ball {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.ball.runs {
+    background: #2196F3;
+    color: white;
+}
+
+.ball.wicket {
+    background: #f44336;
+    color: white;
+}
+
+.ball.extra {
+    background: #FF9800;
+    color: white;
+}
+
+.toss-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.btn-toss {
+    display: inline-block;
+    background: #9C27B0;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-toss:hover {
+    background: #7B1FA2;
+}
+
+/* Mobile Optimization */
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .score-display {
+        font-size: 2em;
+    }
+
+    .button-grid {
+        gap: 8px;
+    }
+
+    .btn-run, .btn-extra, .btn-wicket {
+        padding: 12px;
+        font-size: 1em;
+    }
+}
