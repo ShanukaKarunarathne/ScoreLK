@@ -228,6 +228,52 @@ h1 {
     min-height: 40px;
 }
 
+.overs-history {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.overs-history h4 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.history-display {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.over-row {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.over-row .over-number {
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+.over-row .over-balls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.over-row .over-summary {
+    margin-top: 5px;
+    font-size: 0.85em;
+    color: #666;
+}
+
 .ball {
     width: 35px;
     height: 35px;

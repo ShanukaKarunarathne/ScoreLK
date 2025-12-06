@@ -26,6 +26,7 @@ class CricketScorer {
         this.extraPending = null; // Track if Wide or No Ball was clicked
         this.firstInningsComplete = false;
         this.matchOver = false;
+        this.oversHistory = []; // Store completed overs
         
         this.init();
     }
@@ -186,7 +187,17 @@ class CricketScorer {
         const team = this.getCurrentTeam();
         
         if (team.balls % 6 === 0 && team.balls > 0) {
-            // Over complete
+            // Over complete - save to history
+            const overNumber = Math.floor(team.balls / 6);
+            const overRuns = this.calculateOverRuns(this.currentOver);
+            
+            this.oversHistory.push({
+                overNumber: overNumber,
+                balls: [...this.currentOver],
+                runs: overRuns,
+                team: this.battingTeam
+            });
+            
             this.currentOver = [];
         }
         
@@ -194,6 +205,24 @@ class CricketScorer {
         const completedOvers = Math.floor(team.balls / 6);
         const remainingBalls = team.balls % 6;
         team.overs = completedOvers + (remainingBalls / 10);
+    }
+
+    calculateOverRuns(balls) {
+        let runs = 0;
+        balls.forEach(ball => {
+            if (ball.type === 'runs') {
+                runs += ball.value;
+            } else if (ball.type === 'extra') {
+                // Extract runs from extras like "WD+4" or "NB+6"
+                const match = ball.value.match(/\+(\d+)/);
+                if (match) {
+                    runs += parseInt(match[1]) + 1; // Extra + batsman runs
+                } else {
+                    runs += 1; // Just the extra
+                }
+            }
+        });
+        return runs;
     }
 
     checkInningsComplete() {
@@ -306,6 +335,7 @@ class CricketScorer {
         this.extraPending = null;
         this.firstInningsComplete = false;
         this.matchOver = false;
+        this.oversHistory = [];
         this.clearExtraHighlight();
         
         this.updateDisplay();
@@ -328,6 +358,9 @@ class CricketScorer {
         
         // Update current over display
         this.updateOverDisplay();
+        
+        // Update overs history
+        this.updateOversHistory();
     }
     
     updateOverDisplay() {
@@ -350,6 +383,60 @@ class CricketScorer {
             }
             
             overBallsDiv.appendChild(ballDiv);
+        });
+    }
+    
+    updateOversHistory() {
+        const historyDiv = document.getElementById('oversHistory');
+        historyDiv.innerHTML = '';
+        
+        // Filter overs for current batting team
+        const currentTeamOvers = this.oversHistory.filter(over => over.team === this.battingTeam);
+        
+        if (currentTeamOvers.length === 0) {
+            historyDiv.innerHTML = '<p style="color: #999; text-align: center;">No completed overs yet</p>';
+            return;
+        }
+        
+        // Display in reverse order (most recent first)
+        currentTeamOvers.reverse().forEach(over => {
+            const overRow = document.createElement('div');
+            overRow.classList.add('over-row');
+            
+            const overNumber = document.createElement('div');
+            overNumber.classList.add('over-number');
+            overNumber.textContent = `Over ${over.overNumber}`;
+            overRow.appendChild(overNumber);
+            
+            const overBalls = document.createElement('div');
+            overBalls.classList.add('over-balls');
+            
+            over.balls.forEach(ball => {
+                const ballDiv = document.createElement('div');
+                ballDiv.classList.add('ball');
+                
+                if (ball.type === 'runs') {
+                    ballDiv.classList.add('runs');
+                    ballDiv.textContent = ball.value;
+                } else if (ball.type === 'wicket') {
+                    ballDiv.classList.add('wicket');
+                    ballDiv.textContent = 'W';
+                } else if (ball.type === 'extra') {
+                    ballDiv.classList.add('extra');
+                    ballDiv.textContent = ball.value;
+                }
+                
+                overBalls.appendChild(ballDiv);
+            });
+            
+            overRow.appendChild(overBalls);
+            
+            const summary = document.createElement('div');
+            summary.classList.add('over-summary');
+            summary.textContent = `${over.runs} runs`;
+            overRow.appendChild(summary);
+            
+            historyDiv.appendChild(overRow);
         });
     }
 }

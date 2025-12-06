@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Score Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Cricket Score Tracker</h1>
+        
+        <div class="match-settings">
+            <p>📋 <span id="matchOvers">20</span> Overs | <span id="teamANameSettings">Team A</span>: <span id="teamAPlayerCount">11</span> players | <span id="teamBNameSettings">Team B</span>: <span id="teamBPlayerCount">11</span> players</p>
+        </div>
+
+        <div class="match-info">
+            <div class="team-display">
+                <div class="team team-a">
+                    <h2 id="teamAName">Team A</h2>
+                    <div class="score-display">
+                        <span class="runs" id="teamARuns">0</span>
+                        <span class="wickets">/ <span id="teamAWickets">0</span></span>
+                    </div>
+                    <div class="overs">Overs: <span id="teamAOvers">0.0</span></div>
+                </div>
+                
+                <div class="team team-b">
+                    <h2 id="teamBName">Team B</h2>
+                    <div class="score-display">
+                        <span class="runs" id="teamBRuns">0</span>
+                        <span class="wickets">/ <span id="teamBWickets">0</span></span>
+                    </div>
+                    <div class="overs">Overs: <span id="teamBOvers">0.0</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="batting-team">
+            <h3>Batting: <span id="battingTeam">Team A</span></h3>
+            <button id="switchTeam" class="btn-switch">Switch Innings</button>
+        </div>
+
+        <div class="instruction-banner" id="instructionBanner" style="display: none;">
+            <p>🎯 Now click a run button to add runs on the extra</p>
+        </div>
+
+        <div class="controls">
+            <div class="runs-buttons">
+                <h4>Add Runs</h4>
+                <div class="button-grid">
+                    <button class="btn-run" data-runs="0">0</button>
+                    <button class="btn-run" data-runs="1">1</button>
+                    <button class="btn-run" data-runs="2">2</button>
+                    <button class="btn-run" data-runs="3">3</button>
+                    <button class="btn-run" data-runs="4">4</button>
+                    <button class="btn-run" data-runs="6">6</button>
+                </div>
+            </div>
+
+            <div class="extras-buttons">
+                <h4>Extras</h4>
+                <div class="button-grid">
+                    <button class="btn-extra" data-extra="wide">Wide</button>
+                    <button class="btn-extra" data-extra="noball">No Ball</button>
+                    <button class="btn-wicket">Wicket</button>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button id="undoBtn" class="btn-undo">Undo Last</button>
+                <button id="resetBtn" class="btn-reset">Reset Match</button>
+            </div>
+        </div>
+
+        <div class="current-over">
+            <h4>Current Over</h4>
+            <div id="overBalls" class="balls-display"></div>
+        </div>
+
+        <div class="overs-history">
+            <h4>Overs History</h4>
+            <div id="oversHistory" class="history-display"></div>
+        </div>
+
+        <div class="toss-link">
+            <a href="index.html" class="btn-toss">Go to Toss</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
