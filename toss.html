@@ -150,6 +150,21 @@
                 <label for="teamBInput">Team B Name:</label>
                 <input type="text" id="teamBInput" placeholder="Enter Team B name" value="Team B">
             </div>
+
+            <div class="input-group">
+                <label for="totalOvers">Total Overs:</label>
+                <input type="number" id="totalOvers" placeholder="Enter overs (e.g., 20)" value="20" min="1" max="50">
+            </div>
+
+            <div class="input-group">
+                <label for="teamAPlayers">Team A Players:</label>
+                <input type="number" id="teamAPlayers" placeholder="Number of players" value="11" min="1" max="11">
+            </div>
+
+            <div class="input-group">
+                <label for="teamBPlayers">Team B Players:</label>
+                <input type="number" id="teamBPlayers" placeholder="Number of players" value="11" min="1" max="11">
+            </div>
         </div>
 
         <button class="toss-btn" id="tossBtn">🪙 Toss Coin</button>
@@ -158,6 +173,12 @@
             <div class="coin-animation" id="coinAnimation">🪙</div>
             <h2 id="winnerText"></h2>
             <p id="resultText"></p>
+            
+            <div id="battingChoice" style="margin-top: 20px; display: none;">
+                <h3 style="color: #333; margin-bottom: 15px;">Choose who bats first:</h3>
+                <button class="toss-btn" id="teamABatsBtn" style="font-size: 1em; padding: 10px 20px;">Team A Bats First</button>
+                <button class="toss-btn" id="teamBBatsBtn" style="font-size: 1em; padding: 10px 20px;">Team B Bats First</button>
+            </div>
         </div>
 
         <div class="action-buttons">
@@ -168,42 +189,71 @@
     <script>
         const teamAInput = document.getElementById('teamAInput');
         const teamBInput = document.getElementById('teamBInput');
+        const totalOvers = document.getElementById('totalOvers');
+        const teamAPlayers = document.getElementById('teamAPlayers');
+        const teamBPlayers = document.getElementById('teamBPlayers');
         const tossBtn = document.getElementById('tossBtn');
         const tossResult = document.getElementById('tossResult');
         const winnerText = document.getElementById('winnerText');
         const resultText = document.getElementById('resultText');
         const coinAnimation = document.getElementById('coinAnimation');
+        const battingChoice = document.getElementById('battingChoice');
+        const teamABatsBtn = document.getElementById('teamABatsBtn');
+        const teamBBatsBtn = document.getElementById('teamBBatsBtn');
 
-        // Load saved team names
+        // Load saved values
         teamAInput.value = localStorage.getItem('teamAName') || 'Team A';
         teamBInput.value = localStorage.getItem('teamBName') || 'Team B';
+        totalOvers.value = localStorage.getItem('totalOvers') || '20';
+        teamAPlayers.value = localStorage.getItem('teamAPlayers') || '11';
+        teamBPlayers.value = localStorage.getItem('teamBPlayers') || '11';
 
         tossBtn.addEventListener('click', () => {
-            // Save team names
+            // Save all match settings
             const teamA = teamAInput.value.trim() || 'Team A';
             const teamB = teamBInput.value.trim() || 'Team B';
+            const overs = parseInt(totalOvers.value) || 20;
+            const playersA = parseInt(teamAPlayers.value) || 11;
+            const playersB = parseInt(teamBPlayers.value) || 11;
             
             localStorage.setItem('teamAName', teamA);
             localStorage.setItem('teamBName', teamB);
+            localStorage.setItem('totalOvers', overs);
+            localStorage.setItem('teamAPlayers', playersA);
+            localStorage.setItem('teamBPlayers', playersB);
 
             // Hide result during animation
             tossResult.classList.remove('show');
+            battingChoice.style.display = 'none';
             
             // Random toss
             setTimeout(() => {
                 const winner = Math.random() < 0.5 ? teamA : teamB;
-                const choice = Math.random() < 0.5 ? 'bat' : 'bowl';
                 
                 winnerText.textContent = `${winner} won the toss!`;
-                resultText.textContent = `${winner} chose to ${choice} first.`;
+                resultText.textContent = `Match: ${overs} overs | ${teamA}: ${playersA} players | ${teamB}: ${playersB} players`;
                 
                 // Show result with animation
                 coinAnimation.style.animation = 'none';
                 setTimeout(() => {
                     coinAnimation.style.animation = 'flip 1s ease-in-out';
                     tossResult.classList.add('show');
+                    battingChoice.style.display = 'block';
                 }, 10);
             }, 100);
+        });
+
+        // Batting choice buttons
+        teamABatsBtn.addEventListener('click', () => {
+            const teamA = teamAInput.value.trim() || 'Team A';
+            localStorage.setItem('battingFirst', 'A');
+            alert(`${teamA} will bat first!`);
+        });
+
+        teamBBatsBtn.addEventListener('click', () => {
+            const teamB = teamBInput.value.trim() || 'Team B';
+            localStorage.setItem('battingFirst', 'B');
+            alert(`${teamB} will bat first!`);
         });
     </script>
 </body>

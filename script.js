@@ -6,7 +6,8 @@ class CricketScorer {
             runs: 0,
             wickets: 0,
             balls: 0,
-            overs: 0
+            overs: 0,
+            players: parseInt(localStorage.getItem('teamAPlayers')) || 11
         };
         
         this.teamB = {
@@ -14,13 +15,17 @@ class CricketScorer {
             runs: 0,
             wickets: 0,
             balls: 0,
-            overs: 0
+            overs: 0,
+            players: parseInt(localStorage.getItem('teamBPlayers')) || 11
         };
         
-        this.battingTeam = 'A';
+        this.totalOvers = parseInt(localStorage.getItem('totalOvers')) || 20;
+        this.battingTeam = localStorage.getItem('battingFirst') || 'A';
         this.currentOver = [];
         this.history = [];
         this.extraPending = null; // Track if Wide or No Ball was clicked
+        this.firstInningsComplete = false;
+        this.matchOver = false;
         
         this.init();
     }
@@ -29,6 +34,11 @@ class CricketScorer {
         // Update team names from localStorage
         document.getElementById('teamAName').textContent = this.teamA.name;
         document.getElementById('teamBName').textContent = this.teamB.name;
+        document.getElementById('matchOvers').textContent = this.totalOvers;
+        document.getElementById('teamANameSettings').textContent = this.teamA.name;
+        document.getElementById('teamBNameSettings').textContent = this.teamB.name;
+        document.getElementById('teamAPlayerCount').textContent = this.teamA.players;
+        document.getElementById('teamBPlayerCount').textContent = this.teamB.players;
         
         // Add event listeners for run buttons
         document.querySelectorAll('.btn-run').forEach(btn => {
@@ -76,6 +86,11 @@ class CricketScorer {
     }
     
     addRuns(runs) {
+        if (this.matchOver) {
+            alert('Match is already over!');
+            return;
+        }
+
         const team = this.getCurrentTeam();
         
         // Save state for undo
@@ -103,6 +118,7 @@ class CricketScorer {
             this.checkOverComplete();
         }
         
+        this.checkInningsComplete();
         this.updateDisplay();
     }
     
@@ -134,11 +150,16 @@ class CricketScorer {
     }
     
     addWicket() {
+        if (this.matchOver) {
+            alert('Match is already over!');
+            return;
+        }
+
         const team = this.getCurrentTeam();
         
-        if (team.wickets >= 10) {
-            alert('All out! Please switch innings.');
-            return;
+        if (team.wickets >= this.totalPlayers - 1) {
+            alert('All out!');
+            // Will be handled by checkInningsComplete
         }
         
         // Save state for undo
@@ -157,6 +178,7 @@ class CricketScorer {
         this.currentOver.push({ type: 'wicket', value: 'W' });
         
         this.checkOverComplete();
+        this.checkInningsComplete();
         this.updateDisplay();
     }
     
@@ -173,15 +195,67 @@ class CricketScorer {
         const remainingBalls = team.balls % 6;
         team.overs = completedOvers + (remainingBalls / 10);
     }
+
+    checkInningsComplete() {
+        const team = this.getCurrentTeam();
+        const maxWickets = team.players - 1;
+        const maxOvers = this.totalOvers;
+        
+        // Check if innings is over
+        const inningsOver = team.wickets >= maxWickets || Math.floor(team.balls / 6) >= maxOvers;
+        
+        if (inningsOver && !this.firstInningsComplete) {
+            // First innings complete
+            this.firstInningsComplete = true;
+            setTimeout(() => {
+                if (confirm(`First innings complete! ${team.name} scored ${team.runs}/${team.wickets}. Switch to second innings?`)) {
+                    this.switchInnings();
+                }
+            }, 500);
+        } else if (inningsOver && this.firstInningsComplete) {
+            // Second innings complete - match over
+            this.matchOver = true;
+            this.showMatchResult();
+        } else if (this.firstInningsComplete) {
+            // Check if chasing team has won
+            const battingTeam = this.getCurrentTeam();
+            const otherTeam = this.battingTeam === 'A' ? this.teamB : this.teamA;
+            
+            if (battingTeam.runs > otherTeam.runs) {
+                this.matchOver = true;
+                this.showMatchResult();
+            }
+        }
+    }
+
+    showMatchResult() {
+        const teamAScore = `${this.teamA.runs}/${this.teamA.wickets}`;
+        const teamBScore = `${this.teamB.runs}/${this.teamB.wickets}`;
+        
+        let result = '🏆 MATCH OVER! 🏆\n\n';
+        result += `${this.teamA.name}: ${teamAScore} (${this.teamA.overs.toFixed(1)} overs)\n`;
+        result += `${this.teamB.name}: ${teamBScore} (${this.teamB.overs.toFixed(1)} overs)\n\n`;
+        
+        if (this.teamA.runs > this.teamB.runs) {
+            const margin = this.teamA.runs - this.teamB.runs;
+            result += `${this.teamA.name} won by ${margin} runs!`;
+        } else if (this.teamB.runs > this.teamA.runs) {
+            const margin = this.teamB.runs - this.teamA.runs;
+            const wicketsLeft = (this.teamB.players - 1) - this.teamB.wickets;
+            result += `${this.teamB.name} won by ${wicketsLeft} wickets!`;
+        } else {
+            result += 'Match Tied!';
+        }
+        
+        alert(result);
+    }
     
     switchInnings() {
-        if (confirm('Switch batting team?')) {
-            this.battingTeam = this.battingTeam === 'A' ? 'B' : 'A';
-            this.currentOver = [];
-            this.extraPending = null;
-            this.clearExtraHighlight();
-            this.updateDisplay();
-        }
+        this.battingTeam = this.battingTeam === 'A' ? 'B' : 'A';
+        this.currentOver = [];
+        this.extraPending = null;
+        this.clearExtraHighlight();
+        this.updateDisplay();
     }
     
     saveState() {
@@ -226,10 +300,12 @@ class CricketScorer {
         this.teamB.balls = 0;
         this.teamB.overs = 0;
         
-        this.battingTeam = 'A';
+        this.battingTeam = localStorage.getItem('battingFirst') || 'A';
         this.currentOver = [];
         this.history = [];
         this.extraPending = null;
+        this.firstInningsComplete = false;
+        this.matchOver = false;
         this.clearExtraHighlight();
         
         this.updateDisplay();

@@ -27,6 +27,17 @@ h1 {
     font-size: 1.8em;
 }
 
+.match-settings {
+    text-align: center;
+    background: #f0f0f0;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    color: #333;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
 .match-info {
     margin-bottom: 20px;
 }
