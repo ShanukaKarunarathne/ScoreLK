@@ -390,54 +390,93 @@ class CricketScorer {
         const historyDiv = document.getElementById('oversHistory');
         historyDiv.innerHTML = '';
         
-        // Filter overs for current batting team
-        const currentTeamOvers = this.oversHistory.filter(over => over.team === this.battingTeam);
-        
-        if (currentTeamOvers.length === 0) {
+        if (this.oversHistory.length === 0) {
             historyDiv.innerHTML = '<p style="color: #999; text-align: center;">No completed overs yet</p>';
             return;
         }
         
-        // Display in reverse order (most recent first)
-        currentTeamOvers.reverse().forEach(over => {
-            const overRow = document.createElement('div');
-            overRow.classList.add('over-row');
+        // Group overs by team
+        const teamAOvers = this.oversHistory.filter(over => over.team === 'A');
+        const teamBOvers = this.oversHistory.filter(over => over.team === 'B');
+        
+        // Display Team A overs if any
+        if (teamAOvers.length > 0) {
+            const teamASection = document.createElement('div');
+            teamASection.classList.add('team-history-section');
             
-            const overNumber = document.createElement('div');
-            overNumber.classList.add('over-number');
-            overNumber.textContent = `Over ${over.overNumber}`;
-            overRow.appendChild(overNumber);
+            const teamAHeader = document.createElement('h5');
+            teamAHeader.style.color = '#667eea';
+            teamAHeader.style.marginBottom = '10px';
+            teamAHeader.textContent = `${this.teamA.name} - Batting`;
+            teamASection.appendChild(teamAHeader);
             
-            const overBalls = document.createElement('div');
-            overBalls.classList.add('over-balls');
-            
-            over.balls.forEach(ball => {
-                const ballDiv = document.createElement('div');
-                ballDiv.classList.add('ball');
-                
-                if (ball.type === 'runs') {
-                    ballDiv.classList.add('runs');
-                    ballDiv.textContent = ball.value;
-                } else if (ball.type === 'wicket') {
-                    ballDiv.classList.add('wicket');
-                    ballDiv.textContent = 'W';
-                } else if (ball.type === 'extra') {
-                    ballDiv.classList.add('extra');
-                    ballDiv.textContent = ball.value;
-                }
-                
-                overBalls.appendChild(ballDiv);
+            // Display in reverse order (most recent first)
+            [...teamAOvers].reverse().forEach(over => {
+                teamASection.appendChild(this.createOverRow(over));
             });
             
-            overRow.appendChild(overBalls);
+            historyDiv.appendChild(teamASection);
+        }
+        
+        // Display Team B overs if any
+        if (teamBOvers.length > 0) {
+            const teamBSection = document.createElement('div');
+            teamBSection.classList.add('team-history-section');
             
-            const summary = document.createElement('div');
-            summary.classList.add('over-summary');
-            summary.textContent = `${over.runs} runs`;
-            overRow.appendChild(summary);
+            const teamBHeader = document.createElement('h5');
+            teamBHeader.style.color = '#667eea';
+            teamBHeader.style.marginBottom = '10px';
+            teamBHeader.style.marginTop = teamAOvers.length > 0 ? '20px' : '0';
+            teamBHeader.textContent = `${this.teamB.name} - Batting`;
+            teamBSection.appendChild(teamBHeader);
             
-            historyDiv.appendChild(overRow);
+            // Display in reverse order (most recent first)
+            [...teamBOvers].reverse().forEach(over => {
+                teamBSection.appendChild(this.createOverRow(over));
+            });
+            
+            historyDiv.appendChild(teamBSection);
+        }
+    }
+    
+    createOverRow(over) {
+        const overRow = document.createElement('div');
+        overRow.classList.add('over-row');
+        
+        const overNumber = document.createElement('div');
+        overNumber.classList.add('over-number');
+        overNumber.textContent = `Over ${over.overNumber}`;
+        overRow.appendChild(overNumber);
+        
+        const overBalls = document.createElement('div');
+        overBalls.classList.add('over-balls');
+        
+        over.balls.forEach(ball => {
+            const ballDiv = document.createElement('div');
+            ballDiv.classList.add('ball');
+            
+            if (ball.type === 'runs') {
+                ballDiv.classList.add('runs');
+                ballDiv.textContent = ball.value;
+            } else if (ball.type === 'wicket') {
+                ballDiv.classList.add('wicket');
+                ballDiv.textContent = 'W';
+            } else if (ball.type === 'extra') {
+                ballDiv.classList.add('extra');
+                ballDiv.textContent = ball.value;
+            }
+            
+            overBalls.appendChild(ballDiv);
         });
+        
+        overRow.appendChild(overBalls);
+        
+        const summary = document.createElement('div');
+        summary.classList.add('over-summary');
+        summary.textContent = `${over.runs} runs`;
+        overRow.appendChild(summary);
+        
+        return overRow;
     }
 }
 
